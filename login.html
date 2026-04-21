@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ZephaChat — Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#0a0a0f;--surface:#13131a;--border:#2a2a3a;--accent:#7c6aff;--accent2:#ff6a9a;--text:#e8e8f0;--muted:#6b6b80;--success:#4ade80;--error:#ff6a6a}
+    body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(124,106,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(124,106,255,.04) 1px,transparent 1px);background-size:44px 44px;z-index:0}
+    .blob{position:fixed;border-radius:50%;filter:blur(90px);opacity:.12;animation:float 9s ease-in-out infinite;z-index:0}
+    .blob1{width:420px;height:420px;background:var(--accent);top:-120px;left:-120px}
+    .blob2{width:320px;height:320px;background:var(--accent2);bottom:-90px;right:-90px;animation-delay:4.5s}
+    @keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(28px,28px)}}
+    .container{position:relative;z-index:1;width:100%;max-width:420px;padding:24px}
+    .logo{text-align:center;margin-bottom:36px;display:flex;flex-direction:column;align-items:center;gap:12px}
+    .logo-icon{width:60px;height:60px}
+    .logo-name{font-size:2rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-1px}
+    .logo-tag{font-family:'Space Mono',monospace;color:var(--muted);font-size:.72rem}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:36px}
+    .tabs{display:flex;background:var(--bg);border-radius:10px;padding:4px;margin-bottom:28px;border:1px solid var(--border)}
+    .tab{flex:1;padding:10px;text-align:center;border-radius:8px;cursor:pointer;font-size:.84rem;font-weight:600;color:var(--muted);transition:all .25s}
+    .tab.active{background:var(--accent);color:white}
+    .form{display:none}.form.active{display:block}
+    .field{margin-bottom:18px}
+    .field label{display:block;font-size:.7rem;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;font-family:'Space Mono',monospace}
+    .field input{width:100%;padding:12px 16px;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Syne',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s,box-shadow .2s}
+    .field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,106,255,.12)}
+    .field input::placeholder{color:var(--muted)}
+    .btn{width:100%;padding:13px;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;transition:all .2s;margin-top:6px;background:linear-gradient(135deg,var(--accent),#9b85ff);color:white}
+    .btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(124,106,255,.32)}
+    .alert{padding:11px 15px;border-radius:8px;font-size:.8rem;margin-bottom:16px;display:none;font-family:'Space Mono',monospace}
+    .alert.error{background:rgba(255,106,106,.1);border:1px solid rgba(255,106,106,.3);color:var(--error)}
+    .alert.success{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);color:var(--success)}
+    .alert.show{display:block}
+  </style>
+</head>
+<body>
+<div class="bg-grid"></div><div class="blob blob1"></div><div class="blob blob2"></div>
+<div class="container">
+  <div class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="60" height="60" rx="18" fill="url(#lg)"/>
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="60" y2="60"><stop offset="0%" stop-color="#7c6aff"/><stop offset="100%" stop-color="#ff6a9a"/></linearGradient></defs>
+        <path d="M12 18C12 15.79 13.79 14 16 14H44C46.21 14 48 15.79 48 18V33C48 35.21 46.21 37 44 37H32L25 46V37H16C13.79 37 12 35.21 12 33V18Z" fill="white" fill-opacity="0.95"/>
+        <circle cx="22" cy="25.5" r="2.2" fill="#7c6aff"/>
+        <circle cx="30" cy="25.5" r="2.2" fill="#7c6aff"/>
+        <circle cx="38" cy="25.5" r="2.2" fill="#7c6aff"/>
+      </svg>
+    </div>
+    <div class="logo-name">ZephaChat</div>
+    <div class="logo-tag">// connect · share · vibe</div>
+  </div>
+  <div class="card">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('login')">Login</div>
+      <div class="tab" onclick="switchTab('register')">Register</div>
+    </div>
+    <div id="alert" class="alert"></div>
+    <div id="loginForm" class="form active">
+      <div class="field"><label>Username</label><input type="text" id="loginUsername" placeholder="Your username" autocomplete="username"/></div>
+      <div class="field"><label>Password</label><input type="password" id="loginPassword" placeholder="Your password" autocomplete="current-password"/></div>
+      <button class="btn" onclick="handleLogin()">Sign In</button>
+    </div>
+    <div id="registerForm" class="form">
+      <div class="field"><label>Username</label><input type="text" id="regUsername" placeholder="Choose a username"/></div>
+      <div class="field"><label>Password</label><input type="password" id="regPassword" placeholder="At least 6 characters"/></div>
+      <div class="field"><label>Confirm Password</label><input type="password" id="regConfirm" placeholder="Repeat password"/></div>
+      <button class="btn" onclick="handleRegister()">Create Account</button>
+    </div>
+  </div>
+</div>
+<script>
+  function switchTab(t){
+    document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',(t==='login'&&i===0)||(t==='register'&&i===1)));
+    document.getElementById('loginForm').classList.toggle('active',t==='login');
+    document.getElementById('registerForm').classList.toggle('active',t==='register');
+    hideAlert();
+  }
+  function showAlert(msg,type){const el=document.getElementById('alert');el.textContent=msg;el.className=`alert ${type} show`}
+  function hideAlert(){document.getElementById('alert').className='alert'}
+  async function handleLogin(){
+    const username=document.getElementById('loginUsername').value.trim();
+    const password=document.getElementById('loginPassword').value;
+    if(!username||!password)return showAlert('Please fill in all fields.','error');
+    const r=await fetch('login.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password})});
+    const d=await r.json();
+    if(d.success){showAlert('Welcome back! Loading...','success');setTimeout(()=>location.href='index.html',800)}
+    else showAlert(d.message||'Login failed.','error');
+  }
+  async function handleRegister(){
+    const username=document.getElementById('regUsername').value.trim();
+    const password=document.getElementById('regPassword').value;
+    const confirm=document.getElementById('regConfirm').value;
+    if(!username||!password||!confirm)return showAlert('All fields required.','error');
+    if(password!==confirm)return showAlert('Passwords do not match.','error');
+    if(password.length<6)return showAlert('Password must be at least 6 characters.','error');
+    const r=await fetch('register.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password})});
+    const d=await r.json();
+    if(d.success){showAlert('Account created! Please log in.','success');setTimeout(()=>switchTab('login'),1400)}
+    else showAlert(d.message||'Registration failed.','error');
+  }
+  document.addEventListener('keydown',e=>{if(e.key==='Enter'){const f=document.querySelector('.form.active').id;f==='loginForm'?handleLogin():handleRegister()}});
+</script>
+</body>
+</html>

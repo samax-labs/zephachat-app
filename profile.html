@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ZephaChat — Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#0a0a0f;--surface:#13131a;--surface2:#1a1a24;--border:#2a2a3a;--accent:#7c6aff;--accent2:#ff6a9a;--text:#e8e8f0;--muted:#6b6b80;--success:#4ade80;--error:#ff6a6a}
+    body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh}
+    header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;gap:14px}
+    .back-btn{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-family:'Syne',sans-serif;font-size:.82rem;cursor:pointer;transition:all .2s;text-decoration:none}
+    .back-btn svg{width:16px;height:16px}.back-btn:hover{border-color:var(--accent);color:var(--accent)}
+    .page-title{font-size:1.05rem;font-weight:700}
+    .container{max-width:580px;margin:0 auto;padding:32px 20px}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;margin-bottom:20px}
+    .section-title{font-size:.68rem;font-family:'Space Mono',monospace;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:20px}
+
+    /* Avatar */
+    .avatar-center{display:flex;flex-direction:column;align-items:center;gap:16px}
+    .avatar-preview{width:100px;height:100px;border-radius:24px;background:var(--surface2);border:2px solid var(--border);overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative}
+    .avatar-preview img{width:100%;height:100%;object-fit:cover}
+    .avatar-initials{font-size:2.2rem;font-weight:800;font-family:'Space Mono',monospace}
+    .upload-label{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:var(--surface2);border:1px dashed var(--border);border-radius:10px;cursor:pointer;font-size:.84rem;color:var(--muted);transition:all .2s}
+    .upload-label svg{width:18px;height:18px}.upload-label:hover{border-color:var(--accent);color:var(--accent)}
+    .upload-hint{font-size:.72rem;color:var(--muted);font-family:'Space Mono',monospace}
+
+    /* Form */
+    .field{margin-bottom:18px}
+    .field label{display:block;font-size:.7rem;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;font-family:'Space Mono',monospace}
+    .field input,.field textarea{width:100%;padding:12px 16px;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Syne',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s}
+    .field input:focus,.field textarea:focus{border-color:var(--accent)}
+    .field input::placeholder,.field textarea::placeholder{color:var(--muted)}
+    .field textarea{resize:vertical;min-height:80px}
+    .char-hint{text-align:right;font-size:.68rem;color:var(--muted);font-family:'Space Mono',monospace;margin-top:4px}
+
+    .btn-save{width:100%;padding:13px;background:linear-gradient(135deg,var(--accent),#9b85ff);border:none;border-radius:10px;color:white;font-family:'Syne',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;transition:all .2s}
+    .btn-save:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(124,106,255,.32)}
+    .alert{padding:11px 15px;border-radius:8px;font-size:.8rem;margin-bottom:18px;display:none;font-family:'Space Mono',monospace}
+    .alert.error{background:rgba(255,106,106,.1);border:1px solid rgba(255,106,106,.3);color:var(--error)}
+    .alert.success{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);color:var(--success)}
+    .alert.show{display:block}
+  </style>
+</head>
+<body>
+<header>
+  <a href="index.html" class="back-btn">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M19 12H5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 5L5 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Back
+  </a>
+  <span class="page-title">Edit Profile</span>
+</header>
+
+<div class="container">
+  <div id="alert" class="alert"></div>
+
+  <div class="card">
+    <div class="section-title">Profile Photo</div>
+    <div class="avatar-center">
+      <div class="avatar-preview" id="avatarPreview">
+        <div class="avatar-initials" id="avatarInitials" style="color:#7c6aff">ZC</div>
+      </div>
+      <label class="upload-label" for="photoInput">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M21 15V19C21 20.1 20.1 21 19 21H5C3.9 21 3 20.1 3 19V15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M17 8L12 3L7 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        Upload Photo
+      </label>
+      <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="previewPhoto(this)"/>
+      <span class="upload-hint">JPG, PNG, GIF or WebP · Max 5MB</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Personal Info</div>
+    <div class="field">
+      <label>Display Name</label>
+      <input type="text" id="displayName" placeholder="How others see you" maxlength="50"/>
+    </div>
+    <div class="field">
+      <label>Bio</label>
+      <textarea id="bio" placeholder="Tell people about yourself..." maxlength="160" oninput="document.getElementById('bioCount').textContent=this.value.length"></textarea>
+      <div class="char-hint"><span id="bioCount">0</span> / 160</div>
+    </div>
+    <div class="field">
+      <label>Contact Info</label>
+      <input type="text" id="contactInfo" placeholder="Email, phone or social handle" maxlength="100"/>
+    </div>
+  </div>
+
+  <button class="btn-save" onclick="saveProfile()">Save Changes</button>
+</div>
+
+<script>
+  let photoFile = null;
+  let hasPhoto  = false;
+
+  function initials(name) {
+    return name ? name.slice(0,2).toUpperCase() : 'ZC';
+  }
+
+  const COLORS = ['#7c6aff','#ff6a9a','#4ade80','#f59e0b','#38bdf8','#fb7185','#a78bfa','#34d399'];
+  function colorFor(n){let h=0;for(let c of n)h=(h<<5)-h+c.charCodeAt(0);return COLORS[Math.abs(h)%COLORS.length]}
+
+  function previewPhoto(input) {
+    if (!input.files[0]) return;
+    photoFile = input.files[0];
+    const reader = new FileReader();
+    reader.onload = e => {
+      const prev = document.getElementById('avatarPreview');
+      prev.innerHTML = `<img src="${e.target.result}" alt="avatar"/>`;
+      hasPhoto = true;
+    };
+    reader.readAsDataURL(photoFile);
+  }
+
+  async function loadProfile() {
+    const res  = await fetch('profile.php');
+    const data = await res.json();
+    if (!data.success) return;
+    const u = data.user;
+    document.getElementById('displayName').value = u.display_name || '';
+    document.getElementById('bio').value          = u.bio || '';
+    document.getElementById('contactInfo').value  = u.contact_info || '';
+    document.getElementById('bioCount').textContent = (u.bio||'').length;
+
+    const name  = u.display_name || u.username || 'ZC';
+    const color = colorFor(u.username || '');
+    if (u.avatar_type === 'photo' && u.avatar_photo) {
+      document.getElementById('avatarPreview').innerHTML = `<img src="${u.avatar_photo}" alt="avatar"/>`;
+      hasPhoto = true;
+    } else {
+      document.getElementById('avatarInitials').textContent = initials(name);
+      document.getElementById('avatarInitials').style.color = color;
+    }
+  }
+
+  async function saveProfile() {
+    const form = new FormData();
+    form.append('display_name', document.getElementById('displayName').value.trim());
+    form.append('bio',          document.getElementById('bio').value.trim());
+    form.append('contact_info', document.getElementById('contactInfo').value.trim());
+    if (photoFile) { form.append('avatar_type','photo'); form.append('avatar_photo', photoFile); }
+    else           { form.append('avatar_type', hasPhoto ? 'photo' : 'initials'); }
+
+    const res  = await fetch('profile.php', {method:'POST',body:form});
+    const data = await res.json();
+    const al   = document.getElementById('alert');
+    al.textContent = data.message;
+    al.className   = `alert ${data.success?'success':'error'} show`;
+    if (data.success) setTimeout(()=>location.href='index.html',1200);
+  }
+
+  (async()=>{
+    const r=await fetch('session.php');const d=await r.json();
+    if(!d.loggedIn){location.href='login.html';return;}
+    await loadProfile();
+  })();
+</script>
+</body>
+</html>
